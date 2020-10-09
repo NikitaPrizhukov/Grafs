@@ -1,0 +1,81 @@
+#include <iostream>
+#include <vector>
+#include <deque>
+
+using namespace std;
+
+//максимальное расстояние от заданной вершины
+
+bool maxLen(vector<vector<int>>& mas, vector<int>& flag, deque<int>& root, int& max, int& min, int count = 1) {
+
+	int len = root.size();
+
+	for (int f = 0; f < len; f++) {
+		for (int i = 0; i < mas[root.front()].size(); i++) {
+			if (flag[mas[root.front()][i]] == 0) {
+				root.push_back(mas[root.front()][i]);
+				flag[mas[root.front()][i]] = 1;
+				min--;
+			}
+		}
+		root.pop_front();
+	}
+
+	if (min < 1) {
+		if (max < count) {
+			max = count;
+		}
+		return true;
+	}
+
+	return maxLen(mas, flag, root, max, min, count + 1);
+}
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	if (count == 1) {
+		cout << 0;
+		return 0;
+	}
+
+	int len;
+	cin >> len;
+
+	vector<vector<int>> mas(count);
+	vector<int> flag(count);
+
+	for (int i = 0; i < flag.size(); i++) {
+		flag[i] = 0;
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+
+		mas[a - 1].push_back(b - 1);
+		mas[b - 1].push_back(a - 1);
+	}
+
+	int root;
+	cin >> root;
+	root--;
+	flag[root] = -1;
+
+	int max = 0;
+
+	int c = 0;
+	c = count - 1;
+
+	deque<int> r;
+	r.push_back(root);
+
+	maxLen(mas, flag, r, max, c);
+
+	cout << max;
+
+	return 0;
+}
