@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <deque>
+
+using namespace std;
+
+//BFS
+
+bool comp(pair<int, int>a, pair<int, int>b) {
+	if (a.first == b.first) {
+		return a.second < b.second;
+	}
+	return a.first < b.first;
+}
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	int len;
+	cin >> len;
+
+	vector<vector<int>> mas(count);
+	vector<bool> flag(count);
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+
+		mas[a - 1].push_back(b - 1);
+		mas[b - 1].push_back(a - 1);
+	}
+
+	int root;
+	cin >> root;
+	root--;
+	flag[root] = true;
+
+	for (int i = 0; i < count; i++) {
+		sort(mas[i].begin(), mas[i].end());
+	}
+
+	deque<int> an;
+	an.push_back(root);
+
+	for (int i = 0; i < count; i++) {
+		cout << an.front() + 1 << " ";
+		for (int f = 0; f < mas[an.front()].size(); f++) {
+
+			if (flag[mas[an.front()][f]] != true) {
+				an.push_back(mas[an.front()][f]);
+				flag[mas[an.front()][f]] = true;
+			}
+		}
+		an.pop_front();
+	}
+
+	return 0;
+}
