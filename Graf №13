@@ -1,0 +1,231 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+//сжимает граф, выводит массу каждой вершины этого графа и находит максимальную длинну по возростанию масс вершин в этом графе
+
+using namespace std;
+
+struct link
+{
+
+	int top;
+	vector<pair<int, int>> links;
+
+
+public:
+
+	void push(int up, int link) {
+		links.push_back(make_pair(up, link));
+	}
+
+	void push_top(int top) {
+		this->top = top;
+	}
+
+	int get_top() {
+		return top;
+	}
+
+	int get_index(int index) {
+		return links[index].first;
+	}
+
+	int get_link(int index) {
+		return links[index].second;
+	}
+
+	size_t size() {
+		return links.size();
+	}
+};
+
+class Graf {
+
+	vector<pair<link, int>> tops;
+	vector<bool> from_to;
+	vector<int> mass_squeeze;
+
+public:
+
+	Graf() {}
+
+	Graf(int count, int len) {
+
+		tops.resize(count);
+		from_to.resize(len);
+	}
+
+	void put_mass(int mass, int index) {
+		tops[index].second = mass;
+	}
+
+	void put_link(int from, int to, int index) {
+		tops[from].first.push(to, index);
+	}
+
+	size_t get_size_link(int index) {
+		return tops[index].first.size();
+	}
+
+	void put_squeeze_mass(int mass) {
+		mass_squeeze.push_back(mass);
+	}
+
+	Graf make_squeeze_graf() {
+
+		Graf dop(tops.size(), from_to.size());
+
+		vector<int> flag(tops.size());
+		vector<int> backInTime(tops.size());
+		vector<int> lowest(tops.size());
+
+		int time = 0;
+
+		for (int i = 0; i < tops.size(); i++) {
+			briges(dop, backInTime, lowest, flag, i, time);
+		}
+
+		for (int i = 0; i < tops.size(); i++) {
+			if (flag[i] == 1) {
+				int sum = 0;
+				DFS(dop, flag, sum, i);
+				dop.put_squeeze_mass(sum);
+			}
+		}
+
+		return dop;
+	}
+
+	int get_lenght() {
+
+		int lenUp = 1;
+
+		for (int i = 0; i < tops.size(); i++) {
+			if (tops[i].first.size() != 0) {
+				vector<bool> flagUp(tops.size());
+				lengthUp(flagUp, i, lenUp);
+			}
+		}
+
+		return lenUp;
+	}
+
+	vector<int> get_all_mass() {
+
+		return mass_squeeze;
+	}
+
+private:
+
+	void put_pair(pair<link, int> a) {
+		tops.push_back(a);
+	}
+
+	void lengthUp(vector<bool>& flag, int root, int& len, int count = 1) {
+
+		flag[root] = true;
+
+		for (size_t i = 0; i < tops[root].first.size(); i++) {
+
+			if (tops[tops[root].first.get_index(i)].second > tops[root].second) {
+				lengthUp(flag, tops[root].first.get_index(i), len, count + 1);
+			}
+
+		}
+
+		if (len < count) {
+			len = count;
+		}
+
+		return;
+	}
+
+	bool briges(Graf& an, vector<int>& backInTime, vector<int>& lowest, vector<int>& flag, int root, int& time, int back = -1) {
+
+		flag[root] = 1;
+		time++;
+		backInTime[root] = time;
+		lowest[root] = time;
+
+		for (size_t i = 0; i < tops[root].first.size(); i++) {
+
+			if (tops[root].first.get_link(i) == back) {
+				continue;
+			}
+
+			if (flag[tops[root].first.get_index(i)] == 0) {
+
+
+				briges(an, backInTime, lowest, flag, tops[root].first.get_index(i), time, tops[root].first.get_link(i));
+				lowest[root] = min(lowest[root], lowest[tops[root].first.get_index(i)]);
+				if (lowest[tops[root].first.get_index(i)] > backInTime[root]) {
+					an.put_link(root, tops[root].first.get_index(i), i);
+					an.put_link(tops[root].first.get_index(i), root, i);
+					from_to[tops[root].first.get_link(i)] = true;
+				}
+			}
+			else {
+				lowest[root] = min(lowest[root], backInTime[tops[root].first.get_index(i)]);
+			}
+		}
+
+		return false;
+	}
+
+	int DFS(Graf& an, vector<int>& flag, int& sum, int root) {
+
+		flag[root] = 0;
+		sum += tops[root].second;
+
+		for (size_t i = 0; i < tops[root].first.size(); i++) {
+
+			if (flag[tops[root].first.get_index(i)] == 1 && from_to[tops[root].first.get_link(i)] != true) {
+				DFS(an, flag, sum, tops[root].first.get_index(i));
+			}
+
+			an.put_mass(sum, root);
+		}
+		an.put_mass(sum, root);
+		return sum;
+	}
+};
+
+int main() {
+
+	int count, len;
+	cin >> count >> len;
+
+	Graf first(count, len);
+
+	for (int i = 0; i < count; i++) {
+		int mass = 0;
+		cin >> mass;
+		first.put_mass(mass, i);
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+		a--; b--;
+
+		first.put_link(a, b, i);
+		first.put_link(b, a, i);
+	}
+
+	Graf second = first.make_squeeze_graf();
+
+	vector<int> mass = second.get_all_mass();
+
+	sort(mass.begin(), mass.end());
+
+	for (int i = 0; i < mass.size(); i++) {
+		cout << mass[i] << " ";
+	}
+
+	cout << endl << second.get_lenght() << endl;
+
+	return 0;
+}
