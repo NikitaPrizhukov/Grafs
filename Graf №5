@@ -1,0 +1,73 @@
+#include <iostream>
+#include <vector>
+
+//сильный ли граф
+
+using namespace std;
+
+bool maxLen(vector<vector<int>>& mas, vector<int>& flag, int root, int count, int& find) {
+
+	for (size_t i = 0; i < mas[root].size(); i++) {
+
+		if (flag[mas[root][i]] == count) {
+			flag[mas[root][i]]++;
+			find--;
+			if (find < 1) {
+				return true;
+			}
+
+			if (maxLen(mas, flag, mas[root][i], count, find)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	int len;
+	cin >> len;
+
+	if (count < 2) {
+		cout << "YES";
+		return 0;
+	}
+
+	vector<vector<int>> mas(count);
+	vector<vector<int>> masobr(count);
+	vector<int> flag(count);
+
+	for (size_t i = 0; i < flag.size(); i++) {
+		flag[i] = 0;
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+
+		mas[a - 1].push_back(b - 1);
+		masobr[b - 1].push_back(a - 1);
+	}
+
+	int find = count - 1;
+	int find2 = find;
+	flag[0] = -1;
+
+	if (maxLen(mas, flag, 0, 0, find)) {
+		if (maxLen(masobr, flag, 0, 1, find2)) {
+			cout << "YES";
+			return 0;
+		}
+	}
+
+	cout << "NO";
+
+	return 0;
+}
