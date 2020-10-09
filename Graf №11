@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+//поиск мостов в графе
+
+using namespace std;
+
+bool maxLen(vector<vector<pair<int, int>>>& mas, vector<int>& backInTime, vector<int>& lowest, vector<int>& an, vector<bool>& flag, int root, int& time, int back = -1) {
+
+	flag[root] = true;
+	time++;
+	backInTime[root] = time;
+	lowest[root] = time;
+
+	for (size_t i = 0; i < mas[root].size(); i++) {
+
+		if (mas[root][i].second == back) {
+			continue;
+		}
+
+		if (flag[mas[root][i].first] != true) {
+
+			maxLen(mas, backInTime, lowest, an, flag, mas[root][i].first, time, mas[root][i].second);
+			lowest[root] = min(lowest[root], lowest[mas[root][i].first]);
+			if (lowest[mas[root][i].first] > backInTime[root]) {
+				an.push_back(mas[root][i].second);
+			}
+		}
+		else {
+			lowest[root] = min(lowest[root], backInTime[mas[root][i].first]);
+		}
+	}
+
+	return false;
+}
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	int len;
+	cin >> len;
+
+	vector<vector<pair<int, int>>> mas(count);
+	vector<bool> flag(count);
+	vector<int> backInTime(count);
+	vector<int> lowest(count);
+	vector<int> an;
+
+	int l = 0;
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+		a--; b--;
+
+
+		mas[a].push_back(make_pair(b, i));
+		mas[b].push_back(make_pair(a, i));
+	}
+
+	int time = 0;
+
+	for (int i = 0; i < count; i++) {
+		maxLen(mas, backInTime, lowest, an, flag, i, time);
+	}
+
+	cout << an.size() << endl;
+
+	sort(an.begin(), an.end());
+
+	for (int i = 0; i < an.size(); i++) {
+		cout << an[i] + 1 << " ";
+	}
+
+	return 0;
+}
