@@ -5,7 +5,7 @@
 
 using namespace std;
 
-bool maxLen(vector<vector<int>>& mas, vector<int>& flag, int root, int count, int& find) {
+bool strongGraf(vector<vector<int>>& mas, vector<int>& flag, int root, int count, int& find) {
 
 	for (size_t i = 0; i < mas[root].size(); i++) {
 
@@ -16,7 +16,7 @@ bool maxLen(vector<vector<int>>& mas, vector<int>& flag, int root, int count, in
 				return true;
 			}
 
-			if (maxLen(mas, flag, mas[root][i], count, find)) {
+			if (strongGraf(mas, flag, mas[root][i], count, find)) {
 				return true;
 			}
 		}
@@ -60,8 +60,8 @@ int main() {
 	int find2 = find;
 	flag[0] = -1;
 
-	if (maxLen(mas, flag, 0, 0, find)) {
-		if (maxLen(masobr, flag, 0, 1, find2)) {
+	if (strongGraf(mas, flag, 0, 0, find)) {
+		if (strongGraf(masobr, flag, 0, 1, find2)) {
 			cout << "YES";
 			return 0;
 		}
