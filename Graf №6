@@ -1,14 +1,12 @@
 #include <iostream>
 #include <vector>
-#include <utility>
-#include <algorithm>
 #include <deque>
 
 using namespace std;
 
 //минимальное расстояние между вершинами
 
-bool maxLen(vector<vector<int>>& mas, vector<int>& flag, deque<int>& root, int& max, int& find, int count = 1) {
+bool minLen(vector<vector<int>>& mas, vector<int>& flag, deque<int>& root, int& max, int& find, int count = 1) {
 
 	int len = root.size();
 
@@ -36,7 +34,7 @@ bool maxLen(vector<vector<int>>& mas, vector<int>& flag, deque<int>& root, int& 
 		return true;
 	}
 
-	return maxLen(mas, flag, root, max, find, count + 1);
+	return minLen(mas, flag, root, max, find, count + 1);
 }
 
 int main() {
@@ -87,7 +85,7 @@ int main() {
 	deque<int> r;
 	r.push_back(root);
 
-	maxLen(mas, flag, r, max, find);
+	minLen(mas, flag, r, max, find);
 
 	cout << max;
 
