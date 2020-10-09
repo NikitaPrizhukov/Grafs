@@ -1,0 +1,98 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+
+using namespace std;
+
+//максимальное остовное дерево из графа
+
+void quicksort(vector<pair<pair<int, int>, int>>& mas, int first, int last)
+{
+	int mid;
+	int count;
+	int f = first, l = last;
+	mid = mas[(f + l) / 2].second;
+	do
+	{
+		while (mas[f].second > mid) f++;
+		while (mas[l].second < mid) l--;
+		if (f <= l) {
+			swap(mas[f], mas[l]);
+			f++;
+			l--;
+		}
+	} while (f < l);
+	if (first < l) quicksort(mas, first, l);
+	if (f < last) quicksort(mas, f, last);
+}
+
+bool oneTree(vector<int> flag) {
+
+	int f = flag[0];
+
+	for (int i = 0; i < flag.size(); i++) {
+		if (flag[i] != f) {
+			return false;
+		}
+	}
+	return true;
+}
+
+int main() {
+
+	int count, len;
+	cin >> count >> len;
+
+	if (count == 1) {
+		cout << 0;
+		return 0;
+	}
+
+	if (count > 1 && len == 0) {
+		cout << "Oops! I did it again";
+		return 0;
+	}
+
+	vector<pair<pair<int, int>, int>> link(len);
+	vector<int> flag(count);
+	vector<int> variety(count);
+
+	for (size_t i = 0; i < flag.size(); i++) {
+		flag[i] = 0;
+		variety[i] = i;
+	}
+
+	for (int i = 0; i < len; i++) {
+		int a, b, w;
+		cin >> a >> b >> w;
+		link[i].first.first = a - 1;
+		link[i].first.second = b - 1;
+		link[i].second = w;
+	}
+
+	quicksort(link, 0, len - 1);
+
+	int sum = 0;
+
+	for (int i = 0; i < len; i++) {
+
+		if (variety[link[i].first.first] != variety[link[i].first.second]) {
+			int v = variety[link[i].first.second];
+			for (int f = 0; f < count; f++) {
+				if (variety[f] == v) {
+					variety[f] = variety[link[i].first.first];
+				}
+			}
+			sum += link[i].second;
+		}
+	}
+
+	if (oneTree(variety)) {
+		cout << sum;
+		return 0;
+	}
+
+	cout << "Oops! I did it again";
+
+	return 0;
+}
