@@ -1,0 +1,81 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+using namespace std;
+
+//является ли граф полным
+
+bool comp(pair<int, int>a, pair<int, int>b) {
+	if (a.first == b.first) {
+		return a.second < b.second;
+	}
+	return a.first < b.first;
+}
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	int len;
+	cin >> len;
+
+	if (count < 2 && len < 1) {
+		cout << "YES";
+		return 0;
+	}
+	else if (count > 1 && len < 1) {
+		cout << "NO";
+		return 0;
+	}
+
+	vector<pair<int, int>> mas(len);
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+
+		if (a < b) {
+			mas[i].first = a;
+			mas[i].second = b;
+		}
+		else {
+			mas[i].first = b;
+			mas[i].second = a;
+		}
+	}
+
+	sort(mas.begin(), mas.end(), comp);
+
+	int index = 2;
+	int back = mas[0].first;
+
+	for (int i = 0; i < len; i++) {
+
+		if (mas[i].first == back) {
+			if (mas[i].second == index) {
+				index = mas[i].second + 1;
+			}
+			else if (mas[i].second > index) {
+				cout << "NO";
+				return 0;
+			}
+		}
+		else if (count != index - 1) {
+			cout << "NO";
+			return 0;
+		}
+		else {
+			back = mas[i].first;
+			index = mas[i].first + 1;
+			i--;
+		}
+	}
+
+	cout << "YES";
+
+	return 0;
+}
