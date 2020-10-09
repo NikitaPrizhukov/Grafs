@@ -1,0 +1,76 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+//выводит компоненты связности
+
+bool maxLen(vector<vector<int>>& mas, vector<int>& flag, vector<vector<int>>& an, int root, int count) {
+
+	for (size_t i = 0; i < mas[root].size(); i++) {
+
+		if (flag[mas[root][i]] == 0) {
+			flag[mas[root][i]] = 1;
+			an[count].push_back(mas[root][i] + 1);
+			maxLen(mas, flag, an, mas[root][i], count);
+		}
+	}
+
+	return true;
+}
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	int len;
+	cin >> len;
+
+	vector<vector<int>> mas(count);
+	vector<int> flag(count);
+
+	for (size_t i = 0; i < flag.size(); i++) {
+		flag[i] = 0;
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+
+		mas[a - 1].push_back(b - 1);
+		mas[b - 1].push_back(a - 1);
+	}
+
+	vector<vector<int>> an;
+	int index = 0;
+
+	for (int i = 0; i < count; i++) {
+
+		if (flag[i] == 0) {
+
+			an.push_back(vector<int>());
+			an[index].push_back(i + 1);
+			flag[i] = 1;
+			maxLen(mas, flag, an, i, index);
+			index++;
+		}
+	}
+
+	for (int i = 0; i < an.size(); i++) {
+		sort(an[i].begin(), an[i].end());
+	}
+
+	cout << an.size() << endl;
+
+	for (int i = 0; i < an.size(); i++) {
+		for (int f = 0; f < an[i].size(); f++) {
+			cout << an[i][f] << " ";
+		}
+		cout << endl;
+	}
+
+	return 0;
+}
