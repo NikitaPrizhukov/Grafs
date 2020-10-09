@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+//минимальные расстояния между вершинами, матричная запись, алгоритм Флойда
+
+void originalFloydWarshall(int** matrix, int numberOfVert) {
+
+	for (int k = 0; k < numberOfVert; k++) {
+		for (int i = 0; i < numberOfVert; i++) {
+			for (int j = 0; j < numberOfVert; j++) {
+
+				matrix[i][j] = min(matrix[i][j], matrix[i][k] + matrix[k][j]);
+
+			}
+		}
+	}
+
+	return;
+}
+
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	int lens;
+	cin >> lens;
+
+	int** matrix = new int* [count];
+
+	for (int i = 0; i < count; i++) {
+		matrix[i] = new int[count];
+		for (int f = 0; f < count; f++) {
+			if (i == f) {
+				matrix[i][f] = 0;
+			}
+			else {
+				matrix[i][f] = 10001;
+			}
+		}
+	}
+
+	for (int i = 0; i < lens; i++) {
+
+		int a, b, len;
+		cin >> a >> b >> len;
+		a--;
+		b--;
+
+		if (matrix[a][b] == 10001) {
+			matrix[a][b] = len;
+			matrix[b][a] = len;
+		}
+		else if (matrix[a][b] > len) {
+			matrix[a][b] = len;
+			matrix[b][a] = len;
+		}
+	}
+
+	originalFloydWarshall(matrix, count);
+
+	for (int i = 0; i < count; i++) {
+		for (int f = 0; f < count; f++) {
+			if (matrix[i][f] == 10001) {
+				matrix[i][f] = -1;
+			}
+			cout << matrix[i][f] << " ";
+		}
+		cout << endl;
+	}
+
+	return 0;
+}
