@@ -1,0 +1,65 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+//DFS
+
+bool DFS(vector<vector<int>>& mas, vector<int>& flag, int root, int count = 1) {
+
+	for (size_t i = 0; i < mas[root].size(); i++) {
+
+		if (flag[mas[root][i]] == 0) {
+			flag[mas[root][i]] = 1;
+			cout << mas[root][i] + 1 << " ";
+			DFS(mas, flag, mas[root][i], count + 1);
+		}
+	}
+	return true;
+}
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	int len;
+	cin >> len;
+
+	vector<vector<int>> mas(count);
+	vector<int> flag(count);
+
+	for (size_t i = 0; i < flag.size(); i++) {
+		flag[i] = 0;
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+
+		mas[a - 1].push_back(b - 1);
+		mas[b - 1].push_back(a - 1);
+	}
+
+	int root;
+	cin >> root;
+	root--;
+	flag[root] = -1;
+
+	if (count == 1) {
+		cout << root + 1;
+		return 0;
+	}
+
+	cout << root + 1 << " ";
+
+	for (int i = 0; i < count; i++) {
+		sort(mas[i].begin(), mas[i].end());
+	}
+
+	DFS(mas, flag, root);
+
+	return 0;
+}
