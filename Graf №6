@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <deque>
+
+using namespace std;
+
+//минимальное расстояние между вершинами
+
+bool maxLen(vector<vector<int>>& mas, vector<int>& flag, deque<int>& root, int& max, int& find, int count = 1) {
+
+	int len = root.size();
+
+	for (int f = 0; f < len; f++) {
+		for (int i = 0; i < mas[root.front()].size(); i++) {
+			if (mas[root.front()][i] == find && flag[mas[root.front()][i]] != 1) {
+
+				if (max > count) {
+					max = count;
+				}
+			}
+			else if (flag[mas[root.front()][i]] == 0) {
+				root.push_back(mas[root.front()][i]);
+				flag[mas[root.front()][i]] = 1;
+			}
+		}
+		root.pop_front();
+	}
+
+	if (root.size() == 0) {
+
+		if (max == 1000001) {
+			max = -1;
+		}
+		return true;
+	}
+
+	return maxLen(mas, flag, root, max, find, count + 1);
+}
+
+int main() {
+
+	int count;
+	cin >> count;
+
+	if (count == 1) {
+		cout << 0;
+		return 0;
+	}
+
+	int len;
+	cin >> len;
+
+	vector<vector<int>> mas(count);
+	vector<int> flag(count);
+
+	for (size_t i = 0; i < flag.size(); i++) {
+		flag[i] = 0;
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		int a, b;
+		cin >> a >> b;
+
+		mas[a - 1].push_back(b - 1);
+		mas[b - 1].push_back(a - 1);
+	}
+
+	int root;
+	cin >> root;
+	root--;
+	flag[root] = -1;
+
+	int find;
+	cin >> find;
+	find--;
+
+	if (root == find) {
+		cout << 0;
+		return 0;
+	}
+
+	int max = 1000001;
+
+	deque<int> r;
+	r.push_back(root);
+
+	maxLen(mas, flag, r, max, find);
+
+	cout << max;
+
+	return 0;
+}
